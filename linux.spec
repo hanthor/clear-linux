@@ -5,13 +5,13 @@
 #
 
 Name:           linux
-Version:        6.15.7
-Release:        1591
+Version:        6.15.9
+Release:        1592
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.15.7.tar.xz
+Source0:        https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.15.9.tar.xz
 Source1:        config
 Source2:        cmdline
 
@@ -117,7 +117,7 @@ license components for the linux package.
 
 %package cpio
 License:        GPL-2.0
-Summary:        cpio file with kenrel modules
+Summary:        cpio file with kernel modules
 Group:          kernel
 
 %description cpio
@@ -135,7 +135,7 @@ Requires:       linux-license = %{version}-%{release}
 Linux kernel build files
 
 %prep
-%setup -q -n linux-6.15.7
+%setup -q -n linux-6.15.9
 
 #cve.patch.start cve patches
 #cve.patch.end
