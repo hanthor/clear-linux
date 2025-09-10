@@ -1,0 +1,24 @@
+# Ignore git and build artifacts
+.git/
+.gitignore
+*.rpm
+*.tar.xz
+results/
+testresults
+
+# Ignore documentation and non-essential files  
+README.md
+Makefile
+Makefile.custom
+update.sh
+scripts/
+archive/
+
+# Only include essential files for kernel build:
+# - linux.spec
+# - config
+# - cmdline  
+# - *.patch files
+# - options.conf
+# - release
+# - upstream
