@@ -18,7 +18,29 @@ Source2:        cmdline
 %define ktarget  native
 %define kversion %{version}-%{release}.%{ktarget}
 
-BuildRequires:  buildreq-kernel
+BuildRequires:  bc
+BuildRequires:  binutils-devel
+BuildRequires:  bison
+BuildRequires:  cpio
+BuildRequires:  dwarves
+BuildRequires:  elfutils-devel
+BuildRequires:  flex
+BuildRequires:  gcc
+BuildRequires:  gcc-c++
+BuildRequires:  gawk
+BuildRequires:  kmod
+BuildRequires:  make
+BuildRequires:  ncurses-devel
+BuildRequires:  net-tools
+BuildRequires:  openssl-devel
+BuildRequires:  pahole
+BuildRequires:  perl
+BuildRequires:  python3-devel
+BuildRequires:  rsync
+BuildRequires:  tar
+BuildRequires:  which
+BuildRequires:  xz
+BuildRequires:  zlib-devel
 
 Requires: systemd-bin
 Requires: init-rdahead-extras
@@ -39,11 +61,10 @@ Patch0050: 0050-Revert-ext4-do-not-create-EA-inode-under-buffer-lock.patch
 #Serie.clr 01XX: Clear Linux patches
 Patch0101: 0101-i8042-decrease-debug-message-level-to-info.patch
 Patch0102: 0102-increase-the-ext4-default-commit-age.patch
-Patch0104: 0104-pci-pme-wakeups.patch
 Patch0106: 0106-intel_idle-tweak-cpuidle-cstates.patch
 Patch0108: 0108-smpboot-reuse-timer-calibration.patch
-Patch0109: 0109-initialize-ata-before-graphics.patch
-Patch0111: 0111-ipv4-tcp-allow-the-memory-tuning-for-tcp-to-go-a-lit.patch
+#Patch0109: 0109-initialize-ata-before-graphics.patch
+#Patch0111: 0111-ipv4-tcp-allow-the-memory-tuning-for-tcp-to-go-a-lit.patch
 Patch0112: 0112-init-wait-for-partition-and-retry-scan.patch
 #Patch0113: 0113-print-fsync-count-for-bootchart.patch
 Patch0114: 0114-add-boot-option-to-allow-unsigned-modules.patch
@@ -58,7 +79,7 @@ Patch0123: 0123-print-CPU-that-faults.patch
 Patch0125: 0125-nvme-workaround.patch
 Patch0126: 0126-don-t-report-an-error-if-PowerClamp-run-on-other-CPU.patch
 Patch0127: 0127-lib-raid6-add-patch.patch
-Patch0128: 0128-itmt_epb-use-epb-to-scale-itmt.patch
+#Patch0128: 0128-itmt_epb-use-epb-to-scale-itmt.patch
 Patch0130: 0130-itmt2-ADL-fixes.patch
 Patch0131: 0131-add-a-per-cpu-minimum-high-watermark-an-tune-batch-s.patch
 Patch0132: 0132-prezero-20220308.patch
@@ -67,7 +88,7 @@ Patch0134: 0134-md-raid6-algorithms-scale-test-duration-for-speedier.patch
 Patch0135: 0135-initcall-only-print-non-zero-initcall-debug-to-speed.patch
 Patch0137: libsgrowdown.patch
 Patch0138: kdf-boottime.patch
-#Patch0139: adlrdt.patch
+Patch0139: adlrdt.patch
 Patch0141: epp-retune.patch
 Patch0147: 0001-mm-memcontrol-add-some-branch-hints-based-on-gcov-an.patch
 Patch0148: 0002-sched-core-add-some-branch-hints-based-on-gcov-analy.patch
@@ -75,16 +96,16 @@ Patch0149: 0149-select-do_pollfd-add-unlikely-branch-hint-return-pat.patch
 Patch0150: 0150-select-core_sys_select-add-unlikely-branch-hint-on-r.patch
 Patch0154: 0136-crypto-kdf-make-the-module-init-call-a-late-init-cal.patch
 Patch0156: ratelimit-sched-yield.patch
-Patch0157: scale-net-alloc.patch
+#Patch0157: scale-net-alloc.patch
 Patch0158: 0158-clocksource-only-perform-extended-clocksource-checks.patch
 Patch0160: better_idle_balance.patch
-Patch0161: 0161-ACPI-align-slab-buffers-for-improved-memory-performa.patch
-Patch0163: 0163-thermal-intel-powerclamp-check-MWAIT-first-use-pr_wa.patch
+#Patch0161: 0161-ACPI-align-slab-buffers-for-improved-memory-performa.patch
+#Patch0163: 0163-thermal-intel-powerclamp-check-MWAIT-first-use-pr_wa.patch
 Patch0164: 0164-KVM-VMX-make-vmx-init-a-late-init-call-to-get-to-ini.patch
-Patch0165: slack.patch
+#Patch0165: slack.patch
 Patch0166: 0166-sched-fair-remove-upper-limit-on-cpu-number.patch
 Patch0167: 0167-net-sock-increase-default-number-of-_SK_MEM_PACKETS-.patch
-Patch0168: cstatedemotion.patch
+#Patch0168: cstatedemotion.patch
 Patch0173: 0173-cpuidle-psd-add-power-sleep-demotion-prevention-for-.patch
 Patch0174: 0174-memcg-increase-MEMCG_CHARGE_BATCH-to-128.patch
 Patch0175: 0175-readdir-add-unlikely-hint-on-len-check.patch
@@ -141,66 +162,66 @@ Linux kernel build files
 #cve.patch.end
 
 #mainline.patch.start Mainline patches, upstream backport and fixes
-%patch0050 -p1
+%patch 0050 -p1
 #mainline.patch.end
 
 #Serie.patch.start Clear Linux patches
-%patch0101 -p1
-%patch0102 -p1
-%patch0104 -p1
-%patch0106 -p1
-%patch0108 -p1
-#%patch0109 -p1
-%patch0111 -p1
-%patch0112 -p1
-#%patch0113 -p1
-%patch0114 -p1
-%patch0115 -p1
-%patch0116 -p1
-%patch0117 -p1
-#%patch0118 -p1
-%patch0120 -p1
-%patch0121 -p1
-%patch0122 -p1
-%patch0123 -p1
-#%patch0125 -p1
-%patch0126 -p1
-%patch0127 -p1
-%patch0128 -p1
-%patch0130 -p1
-%patch0131 -p1
-#patch0132 -p1
-%patch0133 -p1
-%patch0134 -p1
-%patch0135 -p1
-%patch0137 -p1
-#%patch0138 -p1
-#%patch0139 -p1
-%patch0141 -p1
-%patch0149 -p1
-%patch0150 -p1
-%patch0154 -p1
-%patch0156 -p1
-%patch0157 -p1
-%patch0158 -p1
-%patch0160 -p1
-%patch0161 -p1
-%patch0163 -p1
-%patch0164 -p1
-%patch0165 -p1
-%patch0166 -p1
-%patch0167 -p1
-%patch0168 -p1
-%patch0173 -p1
-%patch0174 -p1
-%patch0175 -p1
+%patch 0101 -p1
+%patch 0102 -p1
+#%patch 0104 -p1
+%patch 0106 -p1
+%patch 0108 -p1
+#%patch 0109 -p1
+#%patch 0111 -p1
+%patch 0112 -p1
+#%patch 0113 -p1
+%patch 0114 -p1
+%patch 0115 -p1
+%patch 0116 -p1
+%patch 0117 -p1
+#%patch 0118 -p1
+%patch 0120 -p1
+%patch 0121 -p1
+%patch 0122 -p1
+%patch 0123 -p1
+#%patch 0125 -p1
+%patch 0126 -p1
+%patch 0127 -p1
+#%patch 0128 -p1
+%patch 0130 -p1
+%patch 0131 -p1
+#%patch 0132 -p1
+%patch 0133 -p1
+%patch 0134 -p1
+%patch 0135 -p1
+%patch 0137 -p1
+#%patch 0138 -p1
+%patch 0139 -p1
+%patch 0141 -p1
+%patch 0149 -p1
+%patch 0150 -p1
+%patch 0154 -p1
+%patch 0156 -p1
+#%patch 0157 -p1
+%patch 0158 -p1
+%patch 0160 -p1
+#%patch 0161 -p1
+#%patch 0163 -p1
+%patch 0164 -p1
+#%patch 0165 -p1
+%patch 0166 -p1
+%patch 0167 -p1
+#%patch 0168 -p1
+%patch 0173 -p1
+%patch 0174 -p1
+%patch 0175 -p1
 #Serie.patch.end
 
-# backports
+#backports
 
 
-#%patch0500 -p1
-#%patch0501 -p1
+#%patch 0500 -p1
+#%patch 0501 -p1
 
 
 cp %{SOURCE1} .

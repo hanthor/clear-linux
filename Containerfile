@@ -2,6 +2,7 @@
 # Usage: podman build --build-arg BASE_IMAGE=<your-bootc-image> -t kernel-updated-image .
 
 ARG BASE_IMAGE
+ARG USE_LOCAL_KERNEL=false
 FROM ${BASE_IMAGE} as builder
 
 # Install build dependencies for kernel compilation
@@ -34,6 +35,17 @@ RUN dnf install -y \
     which \
     diffutils \
     hostname \
+    kmod \
+    cpio \
+    bzip2 \
+    xz-devel \
+    zlib-devel \
+    libzstd-devel \
+    ncurses-devel \
+    elfutils-devel \
+    binutils-devel \
+    net-tools \
+    gawk \
     && dnf clean all
 
 # Set up build environment
@@ -48,16 +60,40 @@ COPY options.conf .
 COPY release .
 COPY upstream .
 
+# Ensure root's home directory is properly configured for OSTree systems
+# In OSTree systems, /root is a symlink to /var/roothome
+RUN mkdir -p /var/roothome && \
+    if [ -L /root ] && [ "$(readlink /root)" = "/var/roothome" ]; then \
+        echo "OSTree system detected: /root -> /var/roothome"; \
+    elif [ ! -d /root ]; then \
+        mkdir -p /root; \
+    fi && \
+    if ! grep -q "^root:.*:/root:" /etc/passwd; then \
+        sed -i 's|^root:[^:]*:[^:]*:[^:]*:[^:]*:[^:]*:.*$|root:x:0:0:root:/root:/bin/bash|' /etc/passwd; \
+    fi
+
 # Create RPM build directories
 RUN rpmdev-setuptree
 
-# Download the kernel source
+# Copy local temp-kernel source if USE_LOCAL_KERNEL is true
+ARG USE_LOCAL_KERNEL
+COPY temp-kernel/ ./temp-kernel/
+
+# Use local temp-kernel if available, otherwise download kernel source
 RUN KERNEL_VERSION=$(grep "^Version:" linux.spec | awk '{print $2}') && \
-    echo "Downloading kernel ${KERNEL_VERSION}" && \
+    echo "Kernel version: ${KERNEL_VERSION}" && \
+    echo "USE_LOCAL_KERNEL: ${USE_LOCAL_KERNEL}" && \
     cd ~/rpmbuild/SOURCES && \
-    wget -O linux-${KERNEL_VERSION}.tar.xz \
-    https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-${KERNEL_VERSION}.tar.xz && \
-    echo "Downloaded kernel source: $(ls -lh linux-${KERNEL_VERSION}.tar.xz)"
+    if [ "${USE_LOCAL_KERNEL}" = "true" ] && [ -f "/tmp/kernel-build/temp-kernel/linux-${KERNEL_VERSION}.tar.xz" ]; then \
+        echo "✅ Using local temp-kernel source..." && \
+        cp /tmp/kernel-build/temp-kernel/linux-${KERNEL_VERSION}.tar.xz . && \
+        echo "Local kernel source: $(ls -lh linux-${KERNEL_VERSION}.tar.xz)"; \
+    else \
+        echo "⬇️ Downloading kernel ${KERNEL_VERSION} from kernel.org..." && \
+        wget -O linux-${KERNEL_VERSION}.tar.xz \
+        https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-${KERNEL_VERSION}.tar.xz && \
+        echo "Downloaded kernel source: $(ls -lh linux-${KERNEL_VERSION}.tar.xz)"; \
+    fi
 
 # Copy spec and source files to RPM build directories
 RUN cp linux.spec ~/rpmbuild/SPECS/ && \

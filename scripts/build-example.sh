@@ -21,6 +21,24 @@ BASE_IMAGE="${1:-$FEDORA_BOOTC}"
 echo "Using base image: $BASE_IMAGE"
 echo ""
 
+# Check if temp-kernel has a kernel tarball
+KERNEL_VERSION=$(grep "^Version:" linux.spec | awk '{print $2}')
+USE_LOCAL_KERNEL="false"
+
+if [ -f "temp-kernel/linux-${KERNEL_VERSION}.tar.xz" ]; then
+    USE_LOCAL_KERNEL="true"
+    echo "✅ Found local kernel source: temp-kernel/linux-${KERNEL_VERSION}.tar.xz"
+    echo "Using local kernel source instead of downloading"
+else
+    echo "⬇️ Local kernel source not found, will download from kernel.org"
+fi
+echo ""
+
+# Get BASE_IMAGE name minus tag for naming
+BASE_NAME=$(echo "$BASE_IMAGE" | sed 's/[:\/]/-/g')
+echo "Base image name for tagging: $BASE_NAME"
+echo ""
+
 # Build the kernel-enhanced container
 echo "Building Clear Linux kernel container..."
 echo "This will take 30-60 minutes depending on your system"
@@ -28,19 +46,20 @@ echo ""
 
 podman build \
   --build-arg BASE_IMAGE="$BASE_IMAGE" \
-  -t clear-linux-kernel-bootc:latest \
+  --build-arg USE_LOCAL_KERNEL="$USE_LOCAL_KERNEL" \
+  -t $BASE_NAME:intel \
   -f Containerfile \
   .
 
 echo ""
 echo "=== Build Complete ==="
-echo "Container image: clear-linux-kernel-bootc:latest"
+echo "Container image: $BASE_NAME:intel"
 echo ""
 echo "To test the container:"
-echo "podman run --rm -it clear-linux-kernel-bootc:latest /bin/bash"
+echo "podman run --rm -it $BASE_NAME:intel /bin/bash"
 echo ""
 echo "To check the kernel:"
-echo "podman run --rm clear-linux-kernel-bootc:latest ls -la /usr/lib/kernel/"
+echo "podman run --rm $BASE_NAME:intel ls -la /usr/lib/kernel/"
 echo ""
 echo "To deploy with bootc:"
-echo "bootc switch --image clear-linux-kernel-bootc:latest"
+echo "bootc switch $BASE_NAME:intel"

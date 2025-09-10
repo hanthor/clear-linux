@@ -16,7 +16,7 @@ do
     P=${patch##*/}
     N=$(echo ${P} | cut -c 1-4)
     echo "Patch${N}: ${P}"  >> ${tmpd}/PatchXXXX
-    echo "%patch${N} -p1" >> ${tmpd}/patchYYYY
+    echo "%patch ${N} -p1" >> ${tmpd}/patchYYYY
 done
 
 sed -i "/PK XXXX/r ${tmpd}/PatchXXXX"   ${KLR_SPEC_FILE}

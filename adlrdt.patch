@@ -7,17 +7,17 @@ work around https://bugzilla.kernel.org/show_bug.cgi?id=215141
  	rdt_init_res_defs();
  
 +	if (boot_cpu_data.x86_vendor == X86_VENDOR_INTEL) {
-+		if (boot_cpu_data.x86_model == INTEL_FAM6_ALDERLAKE)
++		if (boot_cpu_data.x86_model == INTEL_ALDERLAKE)
 +			return -ENODEV;
-+		if (boot_cpu_data.x86_model == INTEL_FAM6_ALDERLAKE_L)
++		if (boot_cpu_data.x86_model == INTEL_ALDERLAKE_L)
 +			return -ENODEV;
-+		if (boot_cpu_data.x86_model == INTEL_FAM6_ALDERLAKE_N)
++		if (boot_cpu_data.x86_model == INTEL_ALDERLAKE_N)
 +			return -ENODEV;
-+		if (boot_cpu_data.x86_model == INTEL_FAM6_RAPTORLAKE)
++		if (boot_cpu_data.x86_model == INTEL_RAPTORLAKE)
 +			return -ENODEV;
-+		if (boot_cpu_data.x86_model == INTEL_FAM6_RAPTORLAKE_P)
++		if (boot_cpu_data.x86_model == INTEL_RAPTORLAKE_P)
 +			return -ENODEV;
-+		if (boot_cpu_data.x86_model == INTEL_FAM6_RAPTORLAKE_S)
++		if (boot_cpu_data.x86_model == INTEL_RAPTORLAKE_S)
 +			return -ENODEV;
 +	}
 +
