@@ -1,0 +1,54 @@
+name: Build and Push Kernel Containers
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        base_image:
+          - ghcr.io/ublue-os/bluefin-dx:lts
+          - ghcr.io/tuna-os/yellowfin-dx:latest
+    env:
+      REGISTRY: ghcr.io
+      ORG: ${{ github.repository_owner }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Podman
+        uses: gacts/install-podman@v1.1.1
+
+      - name: Extract image name
+        id: extract_name
+        run: |
+          BASE_IMAGE="${{ matrix.base_image }}"
+          # Get the part after the last / and before the last :
+          IMAGE_NAME=$(basename "$BASE_IMAGE")
+          IMAGE_NAME=${IMAGE_NAME%%:*}
+          echo "image_name=$IMAGE_NAME" >> $GITHUB_OUTPUT
+
+      - name: Build container image
+        run: |
+          podman build \
+            --build-arg BASE_IMAGE="${{ matrix.base_image }}" \
+            --arch x86_64 \
+            -t ${{ env.REGISTRY }}/${{ env.ORG }}/${{ steps.extract_name.outputs.image_name }}:latest \
+            -f Containerfile \
+            .
+
+      - name: Podman Login
+        uses: redhat-actions/podman-login@v1.7
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push image
+        run: |
+          podman push ${{ env.REGISTRY }}/${{ env.ORG }}/${{ steps.extract_name.outputs.image_name }}:latest

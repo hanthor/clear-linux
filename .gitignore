@@ -17,6 +17,8 @@ commitmsg
 results/
 rpms/
 for-review.txt
+patch-testing/
+temp-kernel/
 
 linux-5.*
 /releases.json
